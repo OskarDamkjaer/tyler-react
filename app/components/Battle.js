@@ -1,5 +1,7 @@
 const React = require('react')
 const PropTypes = require('prop-types')
+const {Link} = require('react-router-dom')
+const PlayerPreview = require('./PlayerPreview')
 
 class PlayerInput extends React.Component {
   constructor (props) {
@@ -43,8 +45,8 @@ class PlayerInput extends React.Component {
           onChange={this.handleChange}
         />
         <button
-          className='button'
-          type='submit'
+          className="button"
+          type="submit"
           disabled={!this.state.username}
         >
           Submit.
@@ -66,11 +68,12 @@ class Battle extends React.Component {
     this.state = {
       playerOneName: '',
       playerTwoName: '',
-      playerOneImage: '',
-      playerTwoImage: '',
+      playerOneImage: null,
+      playerTwoImage: null,
     }
 
     this.handleSubmit.bind(this)
+    this.handleReset.bind(this)
   }
 
   handleSubmit (id, username) {
@@ -83,9 +86,20 @@ class Battle extends React.Component {
     })
   }
 
+  handleReset (id) {
+    this.setState(() => {
+      const newState = {}
+      newState[id + 'Name'] = ''
+      newState[id + 'Image'] = null
+      return newState
+    })
+  }
+
   render () {
     const playerOneName = this.state.playerOneName
     const playerTwoName = this.state.playerTwoName
+    const playerOneImage = this.state.playerOneImage
+    const playerTwoImage = this.state.playerTwoImage
 
     return (
       <div className="battle-container">
@@ -96,9 +110,8 @@ class Battle extends React.Component {
               label="Player One"
               onSubmit={this.handleSubmit.bind(this)}
             />
-          )
-            //We need to bind twice for some reason?
-          }
+          )}
+
           {!playerTwoName && (
             <PlayerInput
               id="playerTwo"
@@ -106,10 +119,38 @@ class Battle extends React.Component {
               onSubmit={this.handleSubmit.bind(this)}
             />
           )}
+
+          {playerOneImage !== null &&
+          <PlayerPreview
+            avatar={playerOneImage}
+            username={playerOneName}
+          >
+            <button className='reset' onClick={this.handleReset.bind(this, 'playerOne')}>reset</button>
+          </PlayerPreview>}
+
+          {playerTwoImage !== null &&
+          <PlayerPreview
+            avatar={playerTwoImage}
+            username={playerTwoName}
+          >
+            <button className='reset' onClick={this.handleReset.bind(this, 'playerOne')}>reset</button>
+          </PlayerPreview>}
         </div>
+        {playerOneImage && playerTwoName &&
+        <Link
+          className='button'
+          to={{
+            pathname: this.props.match.url + '/results',
+            search: '?playerOneName=' + playerOneName + '&playerTwoName=' + playerTwoName,
+          }}>
+          Battle
+        </Link>}
       </div>
     )
   }
 }
 
-module.exports = Battle
+//We need to bind twice for some reason?
+
+module
+  .exports = Battle

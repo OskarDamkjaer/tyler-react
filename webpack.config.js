@@ -1,24 +1,37 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
+const config = {
   entry: './app/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index_bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   module: {
     rules: [
       {test: /\.(js)$/, use: 'babel-loader'},
-      {test: /\.css$/, use: ['style-loader', 'css-loader']}
-    ]
+      {test: /\.css$/, use: ['style-loader', 'css-loader']},
+    ],
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
   },
-  plugins: [new HtmlWebpackPlugin({
-    template: 'app/index.html'
-  })]
-
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'app/index.html',
+    }),
+  ],
+};
+if (process.env.NODE_ENV === 'production') {
+  config.plugins.push(
+    new webpack.DefinPlugin({
+      //sets prod in our complied code as well.
+      'process.env': {NODE_ENV: JSON.stringify(process.env.NODE_ENV)},
+    }),
+    new webpack.optimize.UglyfyJsPlugin(),
+  );
 }
+
+module.exports = config;

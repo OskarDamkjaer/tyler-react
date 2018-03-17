@@ -1,6 +1,7 @@
 const React = require('react')
 const PropTypes = require('prop-types')
 const api = require('../utils/api')
+const Loading = require('../components/Loading')
 
 //Simple components can be created as a function returning the render. Does not need "this".
 function SelectLanguage (props) {
@@ -91,7 +92,7 @@ class Popular extends React.Component {
     return (
       <div>
         <SelectLanguage selectedLanguage={this.state.selectedLanguage} onSelect={this.updateLanguage}/>
-        {!this.state.repos ? <p> fetching repos... </p> : <RepoGrid repos={this.state.repos}/>}
+        {!this.state.repos ? <Loading text="fetching repos"/> : <RepoGrid repos={this.state.repos}/>}
       </div>
     )
   }
